@@ -1,0 +1,12 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+dependencies {
+    implementation project(deps.internal.screenshotty)
+
+    implementation deps.libs.annotations
+    implementation deps.libs.kotlin
+    implementation deps.libs.rxJava
+    implementation deps.libs.rxAndroid
+}
