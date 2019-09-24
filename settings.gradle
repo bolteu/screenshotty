@@ -1,1 +1,2 @@
+include ':screenshotty-lib'
 rootProject.name='screenshotty'
