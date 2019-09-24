@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Screenshotty</string>
+    <string name="cd_screenshot_preview">Screenshot preview</string>
+    <string name="shot">Shot</string>
+</resources>

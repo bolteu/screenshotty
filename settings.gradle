@@ -1,2 +1,2 @@
-include ':screenshotty-lib', ':screenshotty-rx-lib'
+include ':screenshotty-lib', ':screenshotty-rx-lib', ':sample'
 rootProject.name='screenshotty'

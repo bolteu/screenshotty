@@ -1,0 +1,17 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    defaultConfig {
+        applicationId "eu.bolt.screenshotty"
+    }
+}
+
+dependencies {
+    implementation project(deps.internal.screenshotty)
+    implementation project(deps.internal.screenshottyRx)
+    implementation deps.libs.appCompat
+    implementation deps.libs.kotlin
+    implementation deps.libs.rxJava
+}
