@@ -1,0 +1,73 @@
+
+buildscript {
+    apply from: rootProject.file("dependencies.gradle")
+
+    ext.kotlin_version = deps.versions.kotlin
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:3.5.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${deps.versions.kotlin}"
+    }
+}
+
+allprojects { project ->
+    project.apply from: rootProject.file("dependencies.gradle")
+
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+allprojects {
+    task allDeps(type: DependencyReportTask) {}
+}
+
+subprojects { project ->
+    afterEvaluate {
+        if (isAndroidModule(project)) {
+            addCommonConfigurationForAndroidModules(project)
+        }
+    }
+}
+
+def addCommonConfigurationForAndroidModules(Project project) {
+    project.android {
+        compileSdkVersion deps.buildConfig.compileSdk
+        buildToolsVersion deps.buildConfig.buildTools
+
+        defaultConfig {
+            minSdkVersion deps.buildConfig.minSdk
+            targetSdkVersion deps.buildConfig.targetSdk
+            vectorDrawables.useSupportLibrary = true
+            versionCode 1
+            versionName "1.0"
+        }
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            }
+        }
+    }
+}
+
+def static isAndroidModule(Project project) {
+    def plugins = project.plugins
+    return plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

@@ -1,0 +1,35 @@
+def versions = [
+        androidx   : '1.1.0',
+        kotlin     : '1.3.50',
+        rxJava     : '2.2.9',
+        rxAndroid  : '2.1.1'
+]
+
+def buildConfig = [
+        buildTools: '29.0.2',
+        compileSdk: 29,
+        minSdk    : 16,
+        targetSdk : 28,
+]
+
+def internal = [
+        screenshotty  : ':screenshotty-lib',
+        screenshottyRx: ':screenshotty-rx-lib'
+]
+
+def libs = [
+        annotations: "androidx.annotation:annotation:${versions.androidx}",
+        appCompat  : "androidx.appcompat:appcompat:${versions.androidx}",
+        kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+        rxJava     : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+        rxAndroid  : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}"
+]
+
+ext {
+    deps = [
+            "versions"   : versions,
+            "buildConfig": buildConfig,
+            "internal"   : internal,
+            "libs"       : libs
+    ]
+}
