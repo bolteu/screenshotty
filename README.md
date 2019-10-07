@@ -27,7 +27,7 @@ User will see a record screen permission dialog. Screenshotty minimizes the numb
 If "Don't show again" option (removed in Android 10) is checked, the system will 
 remember user's choice for all the future invocations. 
 
-### Usage:
+### Usage
 
 1. Create a `ScreenshotManager`:
 
@@ -84,7 +84,7 @@ fun writeToFile(screenshot: Screenshot): File {
 }
 ```
 
-### Reactive wrapper:
+### Reactive wrapper
 
 If you're using [screenshotty-rx](https://github.com/bolteu/screenshotty/new/master?readme=1#gradle), you can transform your `ScreenshotManager` object into `RxScreenshotManager`:
 ```kotlin

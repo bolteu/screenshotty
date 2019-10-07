@@ -1,8 +1,8 @@
 def versions = [
-        androidx   : '1.1.0',
-        kotlin     : '1.3.50',
-        rxJava     : '2.2.9',
-        rxAndroid  : '2.1.1'
+        androidx : '1.1.0',
+        kotlin   : '1.3.50',
+        rxJava   : '2.2.9',
+        rxAndroid: '2.1.1'
 ]
 
 def buildConfig = [
@@ -18,18 +18,20 @@ def internal = [
 ]
 
 def libs = [
-        annotations: "androidx.annotation:annotation:${versions.androidx}",
-        appCompat  : "androidx.appcompat:appcompat:${versions.androidx}",
-        kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
-        rxJava     : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
-        rxAndroid  : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}"
+        annotations   : "androidx.annotation:annotation:${versions.androidx}",
+        appCompat     : "androidx.appcompat:appcompat:${versions.androidx}",
+        kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+        rxJava        : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+        rxAndroid     : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
+        screenshotty  : "eu.bolt:screenshotty:1.0.0",
+        screenshottyRx: "eu.bolt:screenshotty-rx:1.0.0"
 ]
 
 ext {
     deps = [
-            "versions"   : versions,
-            "buildConfig": buildConfig,
-            "internal"   : internal,
-            "libs"       : libs
+            versions   : versions,
+            buildConfig: buildConfig,
+            internal   : internal,
+            libs       : libs
     ]
 }

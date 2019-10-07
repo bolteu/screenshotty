@@ -9,8 +9,8 @@ android {
 }
 
 dependencies {
-    implementation project(deps.internal.screenshotty)
-    implementation project(deps.internal.screenshottyRx)
+    implementation deps.libs.screenshotty
+    implementation deps.libs.screenshottyRx
     implementation deps.libs.appCompat
     implementation deps.libs.kotlin
     implementation deps.libs.rxJava
