@@ -15,5 +15,9 @@ class MakeScreenshotFailedException : RuntimeException {
         fun failedToAcquireImage() = MakeScreenshotFailedException("ImageReader::acquireLatestImage returned null")
 
         fun projectionNotSupported() = MakeScreenshotFailedException("MediaProjection not supported on this API version")
+
+        fun pixelCopyNotSupported() = MakeScreenshotFailedException("PixelCopy not supported on this API version")
+
+        fun pixelCopyFailed(code: Int) = MakeScreenshotFailedException("PixelCopy failed, result code = $code")
     }
 }
