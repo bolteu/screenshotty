@@ -1,5 +1,6 @@
 package eu.bolt.screenshotty.internal
 
+import androidx.annotation.CheckResult
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.Subscriptions
@@ -30,6 +31,17 @@ internal class ScreenshotResultImpl(val spec: ScreenshotSpec?) : ScreenshotResul
             it.onError?.invoke(error)
         }
         subscriptions.clear()
+    }
+
+    @CheckResult
+    fun onErrorFallbackTo(resultProvider: () -> ScreenshotResult): ScreenshotResultImpl {
+        val newResult = ScreenshotResultImpl(null)
+        observe(newResult::onSuccess) { error ->
+            Utils.logE(error)
+            val next = resultProvider()
+            next.observe(newResult::onSuccess, newResult::onError)
+        }
+        return newResult
     }
 
     override fun observe(onSuccess: (Screenshot) -> Unit, onError: (Throwable) -> Unit): ScreenshotResult.Subscription {
@@ -68,8 +80,18 @@ internal class ScreenshotResultImpl(val spec: ScreenshotSpec?) : ScreenshotResul
     }
 
     companion object {
+        fun success(screenshot: Screenshot) = ScreenshotResultImpl(null).apply {
+            onSuccess(screenshot)
+        }
+
         fun error(e: Throwable) = ScreenshotResultImpl(null).apply {
             onError(e)
+        }
+
+        fun from(another: ScreenshotResult): ScreenshotResultImpl {
+            val result = ScreenshotResultImpl(null)
+            another.observe(result::onSuccess, result::onError)
+            return result
         }
     }
 }
