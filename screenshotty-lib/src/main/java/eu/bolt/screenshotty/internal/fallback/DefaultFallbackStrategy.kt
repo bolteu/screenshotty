@@ -1,10 +1,11 @@
-package eu.bolt.screenshotty.internal
+package eu.bolt.screenshotty.internal.fallback
 
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import eu.bolt.screenshotty.FallbackStrategy
+import eu.bolt.screenshotty.internal.ScreenshotSpec
 
 internal class DefaultFallbackStrategy : FallbackStrategy {
 

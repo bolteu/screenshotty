@@ -19,5 +19,7 @@ class MakeScreenshotFailedException : RuntimeException {
         fun pixelCopyNotSupported() = MakeScreenshotFailedException("PixelCopy not supported on this API version")
 
         fun pixelCopyFailed(code: Int) = MakeScreenshotFailedException("PixelCopy failed, result code = $code")
+
+        fun fallbackStrategiesFailed() = MakeScreenshotFailedException("All fallback strategies failed")
     }
 }
