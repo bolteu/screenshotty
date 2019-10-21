@@ -27,9 +27,8 @@ class PixelCopyDelegateV26(activity: Activity) : PixelCopyDelegate {
 
     override fun makeScreenshot(): ScreenshotResult {
         checkOnMainThread()
-        val result = pendingResult
-        if (result != null) {
-            return result
+        if (pendingResult != null) {
+            return requireNotNull(pendingResult)
         }
         val activity = activityReference.get()
         if (activity == null) {
