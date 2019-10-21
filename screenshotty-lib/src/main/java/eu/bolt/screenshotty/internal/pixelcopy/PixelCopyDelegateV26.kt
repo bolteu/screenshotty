@@ -52,12 +52,14 @@ class PixelCopyDelegateV26(activity: Activity) : PixelCopyDelegate {
     }
 
     private fun doMakePixelCopy(activity: Activity, spec: ScreenshotSpec) {
+        var copyDestination: Bitmap? = null
         val window = activity.window
         try {
-            val copyDestination = Bitmap.createBitmap(spec.width, spec.height, Bitmap.Config.ARGB_8888)
+            copyDestination = Bitmap.createBitmap(spec.width, spec.height, Bitmap.Config.ARGB_8888)
             PixelCopy.request(window, copyDestination, { onPixelCopyTaken(it, copyDestination) }, mainThreadHandler)
         } catch (e: Exception) {
             onPixelCopyFailed(e)
+            copyDestination?.recycle()
         }
     }
 
@@ -69,6 +71,7 @@ class PixelCopyDelegateV26(activity: Activity) : PixelCopyDelegate {
         } else {
             val error = MakeScreenshotFailedException.pixelCopyFailed(resultCode)
             result.onError(error)
+            bitmap.recycle()
         }
         pendingResult = null
     }
