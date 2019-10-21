@@ -6,7 +6,7 @@ import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.Subscriptions
 import eu.bolt.screenshotty.internal.Utils.checkOnMainThread
 
-internal class ScreenshotResultImpl(val spec: ScreenshotSpec?) : ScreenshotResult {
+internal class ScreenshotResultImpl(val spec: ScreenshotSpec? = null) : ScreenshotResult {
 
     private val subscriptions = ArrayList<SubscriptionImpl>()
 
@@ -35,7 +35,7 @@ internal class ScreenshotResultImpl(val spec: ScreenshotSpec?) : ScreenshotResul
 
     @CheckResult
     fun onErrorFallbackTo(resultProvider: () -> ScreenshotResult): ScreenshotResultImpl {
-        val newResult = ScreenshotResultImpl(null)
+        val newResult = ScreenshotResultImpl()
         observe(newResult::onSuccess) { error ->
             Utils.logE(error)
             val next = resultProvider()
@@ -80,16 +80,16 @@ internal class ScreenshotResultImpl(val spec: ScreenshotSpec?) : ScreenshotResul
     }
 
     companion object {
-        fun success(screenshot: Screenshot) = ScreenshotResultImpl(null).apply {
+        fun success(screenshot: Screenshot) = ScreenshotResultImpl().apply {
             onSuccess(screenshot)
         }
 
-        fun error(e: Throwable) = ScreenshotResultImpl(null).apply {
+        fun error(e: Throwable) = ScreenshotResultImpl().apply {
             onError(e)
         }
 
         fun from(another: ScreenshotResult): ScreenshotResultImpl {
-            val result = ScreenshotResultImpl(null)
+            val result = ScreenshotResultImpl()
             another.observe(result::onSuccess, result::onError)
             return result
         }
