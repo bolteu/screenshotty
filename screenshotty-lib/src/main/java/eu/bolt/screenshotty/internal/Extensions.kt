@@ -14,4 +14,5 @@ internal fun View.doOnPreDraw(dropFrame: Boolean, action: () -> Unit) {
             return !dropFrame
         }
     })
+    postInvalidate()
 }
