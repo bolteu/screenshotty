@@ -8,7 +8,6 @@ import android.widget.Toast
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
-import eu.bolt.screenshotty.falcon.FalconFallbackStrategy
 import eu.bolt.screenshotty.rx.asRxScreenshotManager
 import io.reactivex.disposables.Disposables
 import kotlinx.android.synthetic.main.activity_main.screenshotPreview
@@ -18,7 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private val screenshotManager by lazy {
         ScreenshotManagerBuilder(this)
-            .addFallbackStrategy(FalconFallbackStrategy())
             .withPermissionRequestCode(REQUEST_SCREENSHOT_PERMISSION)
             .build()
             .asRxScreenshotManager()
