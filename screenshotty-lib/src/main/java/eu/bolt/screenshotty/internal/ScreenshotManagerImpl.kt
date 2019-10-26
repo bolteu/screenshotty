@@ -7,10 +7,12 @@ import eu.bolt.screenshotty.FallbackStrategy
 import eu.bolt.screenshotty.ScreenshotManager
 import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.internal.fallback.FallbackDelegate
+import eu.bolt.screenshotty.internal.floatingpanel.FloatingPanelRenderer
 import eu.bolt.screenshotty.internal.pixelcopy.PixelCopyDelegateCompat
 import eu.bolt.screenshotty.internal.pixelcopy.PixelCopyDelegateV26
 import eu.bolt.screenshotty.internal.projection.MediaProjectionDelegateCompat
 import eu.bolt.screenshotty.internal.projection.MediaProjectionDelegateV21
+import eu.bolt.screenshotty.internal.floatingpanel.FloatingPanelDataProvider
 
 internal class ScreenshotManagerImpl(
     activity: Activity,
@@ -18,9 +20,10 @@ internal class ScreenshotManagerImpl(
     permissionRequestCode: Int
 ) : ScreenshotManager {
 
-    private val pixelCopyDelegate = createPixelCopyDelegate(activity)
+    private val panelRenderer = FloatingPanelRenderer(FloatingPanelDataProvider.getInstance())
+    private val pixelCopyDelegate = createPixelCopyDelegate(activity, panelRenderer)
     private val mediaProjectionDelegate = createMediaProjectionDelegate(activity, permissionRequestCode)
-    private val fallbackDelegate = FallbackDelegate(activity, fallbackStrategies)
+    private val fallbackDelegate = FallbackDelegate(activity, fallbackStrategies, panelRenderer)
 
     override fun makeScreenshot(): ScreenshotResult {
         return ScreenshotResultImpl.from(pixelCopyDelegate.makeScreenshot())
@@ -32,9 +35,9 @@ internal class ScreenshotManagerImpl(
         mediaProjectionDelegate.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun createPixelCopyDelegate(activity: Activity) =
+    private fun createPixelCopyDelegate(activity: Activity, panelRenderer: FloatingPanelRenderer) =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PixelCopyDelegateV26(activity)
+            PixelCopyDelegateV26(activity, panelRenderer)
         } else {
             PixelCopyDelegateCompat()
         }

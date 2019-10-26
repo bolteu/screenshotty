@@ -13,12 +13,16 @@ import eu.bolt.screenshotty.internal.ScreenshotResultImpl
 import eu.bolt.screenshotty.internal.ScreenshotSpec
 import eu.bolt.screenshotty.internal.Utils.checkOnMainThread
 import eu.bolt.screenshotty.internal.doOnPreDraw
+import eu.bolt.screenshotty.internal.floatingpanel.FloatingPanelRenderer
 import eu.bolt.screenshotty.util.MakeScreenshotFailedException
 import java.lang.Exception
 import java.lang.ref.WeakReference
 
 @TargetApi(Build.VERSION_CODES.O)
-class PixelCopyDelegateV26(activity: Activity) : PixelCopyDelegate {
+internal class PixelCopyDelegateV26(
+    activity: Activity,
+    private val floatingPanelRenderer: FloatingPanelRenderer
+) : PixelCopyDelegate {
 
     private val activityReference = WeakReference(activity)
     private val mainThreadHandler = Handler(Looper.getMainLooper())
@@ -66,7 +70,10 @@ class PixelCopyDelegateV26(activity: Activity) : PixelCopyDelegate {
         checkOnMainThread()
         val result = pendingResult ?: return
         if (resultCode == PixelCopy.SUCCESS) {
-            result.onSuccess(ScreenshotBitmap(bitmap))
+            val screenshotBitmap = activityReference.get()?.let {
+                floatingPanelRenderer.tryRenderDialogs(it, bitmap)
+            } ?: bitmap
+            result.onSuccess(ScreenshotBitmap(screenshotBitmap))
         } else {
             val error = MakeScreenshotFailedException.pixelCopyFailed(resultCode)
             result.onError(error)
