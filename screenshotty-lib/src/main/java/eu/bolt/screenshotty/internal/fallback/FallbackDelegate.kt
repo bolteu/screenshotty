@@ -6,13 +6,17 @@ import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.internal.ScreenshotResultImpl
 import eu.bolt.screenshotty.internal.Utils
+import eu.bolt.screenshotty.internal.floatingpanel.FloatingPanelRenderer
 import eu.bolt.screenshotty.util.MakeScreenshotFailedException
 import java.lang.ref.WeakReference
 
-internal class FallbackDelegate(activity: Activity, strategies: List<FallbackStrategy>) {
+internal class FallbackDelegate(
+    activity: Activity,
+    strategies: List<FallbackStrategy>,
+    panelRenderer: FloatingPanelRenderer) {
 
     private val activityRef = WeakReference(activity)
-    private val strategies = strategies.plus(DefaultFallbackStrategy())
+    private val strategies = strategies.plus(DefaultFallbackStrategy(panelRenderer))
 
     fun makeScreenshot(): ScreenshotResult {
         val activity = activityRef.get()

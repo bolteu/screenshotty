@@ -2,7 +2,7 @@ package eu.bolt.screenshotty.internal.pixelcopy
 
 import eu.bolt.screenshotty.ScreenshotResult
 
-interface PixelCopyDelegate {
+internal interface PixelCopyDelegate {
 
     fun makeScreenshot(): ScreenshotResult
 
