@@ -1,31 +1,33 @@
 # Screenshotty
 
-The library provides you with a simple API to capture precisely what a user sees on their screen, hiding the complexity of [MediaProjection](https://developer.android.com/reference/android/media/projection/MediaProjection) and taking care of compatibility and fallback actions in case of failure.
+The library combines [MediaProjection](https://developer.android.com/reference/android/media/projection/MediaProjection), [PixelCopy](https://developer.android.com/reference/android/view/PixelCopy) and Canvas drawing and provides an easy-to-use API, abstracted from the Android framework and the complexities of the underlying mechanisms, to capture precisely what a user sees on their screen.
 
 [The sample app](https://github.com/bolteu/screenshotty/blob/master/sample/src/main/java/eu/bolt/screenshotty/sample/MainActivity.kt) shows how to use the library.
 
-## Gradle 
+## Gradle
 Add this to your dependencies block.
 ```
-implementation 'eu.bolt:screenshotty:1.0.1'
+implementation 'eu.bolt:screenshotty:1.0.2'
 ```
 
 To use a [reactive wrapper](https://github.com/bolteu/screenshotty/new/master?readme=1#reactive-wrapper) also add:
 ```
-implementation 'eu.bolt:screenshotty-rx:1.0.1'
+implementation 'eu.bolt:screenshotty-rx:1.0.2'
 ```
 
 ## Wiki
 
 ### General
-If we want to capture a screenshot inside the app, the simplest approach is to draw the root view on a `Bitmap`, but 
-this approach won't work correctly if there are open dialogs, or view hierarchy contains  maps or other `SurfaceView`s. 
-Screenshotty uses [MediaProjection](https://developer.android.com/reference/android/media/projection/MediaProjection) to 
+If we want to capture a screenshot inside the app, the simplest approach is to draw the root view on a `Bitmap`, but
+this approach won't work correctly if there are open dialogs, or view hierarchy contains maps or other `SurfaceView`s.
+Screenshotty uses [PixelCopy](https://developer.android.com/reference/android/view/PixelCopy) and [MediaProjection](https://developer.android.com/reference/android/media/projection/MediaProjection) to
 provide the correct image in all these cases.
 
-User will see a record screen permission dialog. Screenshotty minimizes the number of times the dialog is shown: permission has to be granted only once per process lifetime. 
-If "Don't show again" option (removed in Android 10) is checked, the system will 
-remember user's choice for all the future invocations. 
+First the library tries to make a `PixelCopy` with dialogs, retrieved via reflection, rendered on top.
+
+If this approach fails, user will see a record screen permission dialog. Screenshotty minimizes the number of times the dialog is shown: permission has to be granted only once per process lifetime. If "Don't show again" option (removed in Android 10) is checked, the system will remember user's choice for all the future invocations. If the permission is granted, a `MediaProjection` API is used to take a single frame and provide it to result listeners.
+
+In case `MediaProjection` fails, fallback strategies are invoked one-by-one until the first one succeeds to provide a Bitmap.
 
 ### Usage
 
@@ -105,16 +107,10 @@ subscription = rxScreenshotManager.makeScreenshot()
 
 ### Fallback strategies
 
-When constructing a `ScreenshotManager` you can add any number of objects that implement [`FallbackStrategy`](https://github.com/bolteu/screenshotty/blob/master/screenshotty-lib/src/main/java/eu/bolt/screenshotty/FallbackStrategy.kt) interface.
-If a user doesn't grant the permission to capture screen or `MediaProjection` fails for some reason, fallback strategies will be invoked
-one by one in the order they were added, until the first one succeeds to provide a `Bitmap`. 
+When constructing a `ScreenshotManager` you can add any number of objects that implement [`FallbackStrategy`](https://github.com/bolteu/screenshotty/blob/master/screenshotty-lib/src/main/java/eu/bolt/screenshotty/FallbackStrategy.kt) interface. If `PixelCopy` or `MediaProjection` fails for some reason, fallback strategies will be invoked
+one by one in the order they were added, until the first one succeeds to provide a `Bitmap`.
 
-There's a `FalconFallbackStrategy` implementation available, which internally uses another screenshot library [Falcon](https://github.com/jraska/Falcon). In addition to simply drawing the view hierarchy it also correctly handles displayed dialogs.
-If you want to use `FalconFallbackStrategy`, it has to be explicitely specified:
-```kotlin
-builder.addFallbackStrategy(FalconFallbackStrategy())
-```
-If all other strategies fail, the default one (that simply calls `draw` on the root view) will be invoked.
+If no strategies were added or all of them failed, the default one (that simply calls `draw` on the root view and tries to render dialogs retrieved via reflection on top) will be invoked.
 
 ## License
 ```

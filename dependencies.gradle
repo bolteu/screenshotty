@@ -23,8 +23,8 @@ def libs = [
         kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
         rxJava        : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
         rxAndroid     : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
-        screenshotty  : "eu.bolt:screenshotty:1.0.1",
-        screenshottyRx: "eu.bolt:screenshotty-rx:1.0.1"
+        screenshotty  : "eu.bolt:screenshotty:1.0.2",
+        screenshottyRx: "eu.bolt:screenshotty-rx:1.0.2"
 ]
 
 ext {
