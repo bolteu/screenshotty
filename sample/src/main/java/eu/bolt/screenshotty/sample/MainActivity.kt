@@ -1,19 +1,24 @@
 package eu.bolt.screenshotty.sample
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import cube.Cube
+import embeddedActivity.EmbeddedActivityHost
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.rx.asRxScreenshotManager
 import io.reactivex.disposables.Disposables
-import kotlinx.android.synthetic.main.activity_main.screenshotPreview
-import kotlinx.android.synthetic.main.activity_main.shotButton
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    var host = EmbeddedActivityHost(this)
 
     private val screenshotManager by lazy {
         ScreenshotManagerBuilder(this)
@@ -30,6 +35,13 @@ class MainActivity : AppCompatActivity() {
 
         shotButton.setOnClickListener {
             makeScreenshot()
+        }
+
+        (findViewById<View>(R.id.View) as FrameLayout).addView(host.inflate(R.layout.fragment_container))
+        host.bindId(R.id.fragment_container)
+        host.log.log("savedInstanceState is $savedInstanceState")
+        if (savedInstanceState == null) {
+            host.addAndBuildClient(R.id.fragment_container, Cube())
         }
     }
 

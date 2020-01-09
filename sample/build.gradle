@@ -5,6 +5,17 @@ apply plugin: 'kotlin-android-extensions'
 android {
     defaultConfig {
         applicationId "eu.bolt.screenshotty"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++14"
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/java/cube/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
     }
 }
 
@@ -14,4 +25,5 @@ dependencies {
     implementation deps.libs.appCompat
     implementation deps.libs.kotlin
     implementation deps.libs.rxJava
+    implementation 'junit:junit:4.12'
 }
