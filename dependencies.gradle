@@ -8,7 +8,7 @@ def versions = [
 def buildConfig = [
         buildTools: '29.0.2',
         compileSdk: 29,
-        minSdk    : 16,
+        minSdk    : 17, // View.generateViewId() Added in API level 17,
         targetSdk : 28,
 ]
 

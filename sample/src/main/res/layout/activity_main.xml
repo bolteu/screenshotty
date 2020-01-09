@@ -7,6 +7,32 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:text="OpenGL sample application that should appear in the screenshot"
+        android:textColor="#2f313f"
+        android:textSize="18sp" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <FrameLayout android:id="@+id/View" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#53D363"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:text="Image View"
+        android:textColor="#2f313f"
+        android:textSize="18sp" />
+
     <ImageView
         android:id="@+id/screenshotPreview"
         android:layout_width="match_parent"
