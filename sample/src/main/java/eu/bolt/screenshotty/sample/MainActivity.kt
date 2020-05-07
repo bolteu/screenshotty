@@ -1,17 +1,20 @@
 package eu.bolt.screenshotty.sample
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.rx.asRxScreenshotManager
 import io.reactivex.disposables.Disposables
-import kotlinx.android.synthetic.main.activity_main.screenshotPreview
-import kotlinx.android.synthetic.main.activity_main.shotButton
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+import java.io.FileOutputStream
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         screenshotSubscription = screenshotManager
             .makeScreenshot()
             .subscribe(
-                ::showScreenshot,
+                ::handleScreenshot,
                 ::handleScreenshotError
             )
     }
@@ -53,11 +56,23 @@ class MainActivity : AppCompatActivity() {
         screenshotManager.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun showScreenshot(screenshot: Screenshot) {
+    private fun handleScreenshot(screenshot: Screenshot) {
         val bitmap = when (screenshot) {
             is ScreenshotBitmap -> screenshot.bitmap
         }
         screenshotPreview.setImageBitmap(bitmap)
+        saveScreenShot(bitmap)
+    }
+
+    /**
+     * If you want to pull the file to pc just use following command
+     * adb pull /data/data/eu.bolt.screenshotty/files/file.png ~/Desktop/screenshot.png
+     */
+    private fun saveScreenShot(bitmap: Bitmap) {
+        val file = File(filesDir, "screenshot.png")
+        FileOutputStream(file).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        }
     }
 
     private fun handleScreenshotError(t: Throwable) {
