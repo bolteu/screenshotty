@@ -1,0 +1,11 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.vanniktech.maven.publish'
+
+dependencies {
+    implementation project(deps.internal.screenshotty)
+
+    implementation deps.libs.kotlin
+    implementation deps.libs.kotlinCoroutines
+}
