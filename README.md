@@ -7,12 +7,12 @@ The library combines [MediaProjection](https://developer.android.com/reference/a
 ## Gradle
 Add this to your dependencies block.
 ```
-implementation 'eu.bolt:screenshotty:1.0.3'
+implementation 'eu.bolt:screenshotty:1.0.4'
 ```
 
 To use a [reactive wrapper](https://github.com/bolteu/screenshotty/new/master?readme=1#reactive-wrapper) also add:
 ```
-implementation 'eu.bolt:screenshotty-rx:1.0.3'
+implementation 'eu.bolt:screenshotty-rx:1.0.4'
 ```
 
 ## Wiki
