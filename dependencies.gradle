@@ -2,7 +2,8 @@ def versions = [
         androidx : '1.1.0',
         kotlin   : '1.3.50',
         rxJava   : '2.2.9',
-        rxAndroid: '2.1.1'
+        rxAndroid: '2.1.1',
+        coroutines: '1.3.9'
 ]
 
 def buildConfig = [
@@ -14,17 +15,19 @@ def buildConfig = [
 
 def internal = [
         screenshotty  : ':screenshotty-lib',
-        screenshottyRx: ':screenshotty-rx-lib'
+        screenshottyRx: ':screenshotty-rx-lib',
+        screenshottyCoroutines: ':screenshotty-coroutines-lib'
 ]
 
 def libs = [
-        annotations   : "androidx.annotation:annotation:${versions.androidx}",
-        appCompat     : "androidx.appcompat:appcompat:${versions.androidx}",
-        kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
-        rxJava        : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
-        rxAndroid     : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
-        screenshotty  : "eu.bolt:screenshotty:1.0.3",
-        screenshottyRx: "eu.bolt:screenshotty-rx:1.0.3"
+        annotations             : "androidx.annotation:annotation:${versions.androidx}",
+        appCompat               : "androidx.appcompat:appcompat:${versions.androidx}",
+        kotlin                  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+        kotlinCoroutines        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
+        rxJava                  : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+        rxAndroid               : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
+        screenshotty            : "eu.bolt:screenshotty:1.0.3",
+        screenshottyRx          : "eu.bolt:screenshotty-rx:1.0.3"
 ]
 
 ext {
