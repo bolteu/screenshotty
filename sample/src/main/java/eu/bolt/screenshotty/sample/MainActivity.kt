@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import eu.bolt.screenshotty.Screenshot
+import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.rx.asRxScreenshotManager
@@ -15,12 +16,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
 
-
 class MainActivity : AppCompatActivity() {
 
     private val screenshotManager by lazy {
         ScreenshotManagerBuilder(this)
             .withPermissionRequestCode(REQUEST_SCREENSHOT_PERMISSION)
+            .withCustomActionOrder(ScreenshotActionOrder.pixelCopyFirst())
             .build()
             .asRxScreenshotManager()
     }

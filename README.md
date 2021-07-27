@@ -7,12 +7,17 @@ The library combines [MediaProjection](https://developer.android.com/reference/a
 ## Gradle
 Add this to your dependencies block.
 ```
-implementation 'eu.bolt:screenshotty:1.0.3'
+implementation 'eu.bolt:screenshotty:1.0.4'
 ```
 
 To use a [reactive wrapper](https://github.com/bolteu/screenshotty/new/master?readme=1#reactive-wrapper) also add:
 ```
-implementation 'eu.bolt:screenshotty-rx:1.0.3'
+implementation 'eu.bolt:screenshotty-rx:1.0.4'
+```
+
+To work with [coroutines](https://github.com/bolteu/screenshotty/new/master?readme=1#coroutines) add: 
+```
+implementation 'eu.bolt:screenshotty-coroutines:1.0.4'
 ```
 
 ## Wiki
@@ -35,7 +40,8 @@ In case `MediaProjection` fails, fallback strategies are invoked one-by-one unti
 
 ```kotlin
 screenshotManager = ScreenshotManagerBuilder(this)
-   .withPermissionRequestCode(REQUEST_SCREENSHOT_PERMISSION) //optional, 888 is the default
+   .withCustomActionOrder(ScreenshotActionOrder.pixelCopyFirst()) //optional, ScreenshotActionOrder.pixelCopyFirst() by default
+   .withPermissionRequestCode(REQUEST_SCREENSHOT_PERMISSION) //optional, 888 by default
    .build()
 ```
 
@@ -105,12 +111,24 @@ subscription = rxScreenshotManager.makeScreenshot()
    )
 ```
 
+### Coroutines wrapper
+Screenshooty also supports [coroutines](https://github.com/bolteu/screenshotty/new/master?readme=1#gradle) by exposing the `ScreenshotManager.makeScreenshotAsync()` suspend extension function.
+```kotlin
+    screenshotManager.makeScreenshotAsync()
+``` 
+[Usage](https://github.com/bolteu/screenshotty/new/master?readme=1#usage) is exactly the same, but `makeScreenshot()` is a `suspend` function.
+
 ### Fallback strategies
 
 When constructing a `ScreenshotManager` you can add any number of objects that implement [`FallbackStrategy`](https://github.com/bolteu/screenshotty/blob/master/screenshotty-lib/src/main/java/eu/bolt/screenshotty/FallbackStrategy.kt) interface. If `PixelCopy` or `MediaProjection` fails for some reason, fallback strategies will be invoked
 one by one in the order they were added, until the first one succeeds to provide a `Bitmap`.
 
 If no strategies were added or all of them failed, the default one (that simply calls `draw` on the root view and tries to render dialogs retrieved via reflection on top) will be invoked.
+
+### Actions order
+
+When constructing a `ScreenshotManager` an order in which screenshot actions will be taken can be specified. By default the order is `PixelCopy` -> `MediaProjection` -> `Fallbacks`, but that can be easily changed.  
+Note that `Fallbacks` will still run in the order they were added in. `ScreenshotActionOrder` provides all possible actions and convenient order creators. 
 
 ## License
 ```
