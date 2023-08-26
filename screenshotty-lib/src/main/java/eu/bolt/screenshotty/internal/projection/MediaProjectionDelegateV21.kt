@@ -12,12 +12,10 @@ import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.view.Surface
-import androidx.annotation.RequiresApi
 import eu.bolt.screenshotty.ScreenshotBitmap
 import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.internal.ScreenshotResultImpl
@@ -27,10 +25,10 @@ import eu.bolt.screenshotty.internal.Utils.closeSafely
 import eu.bolt.screenshotty.internal.Utils.interruptSafely
 import eu.bolt.screenshotty.internal.Utils.releaseSafely
 import eu.bolt.screenshotty.internal.Utils.stopSafely
+import eu.bolt.screenshotty.internal.isEmptyBitmap
 import eu.bolt.screenshotty.util.MakeScreenshotFailedException
 import java.lang.ref.WeakReference
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 internal class MediaProjectionDelegateV21(
     activity: Activity,
     private val permissionRequestCode: Int
@@ -59,7 +57,10 @@ internal class MediaProjectionDelegateV21(
         val newResult = ScreenshotResultImpl(screenshotSpec)
         val projection = LAST_ACCESS_DATA?.let(::getMediaProjection)
         if (projection == null) {
-            activity.startActivityForResult(projectionManager.createScreenCaptureIntent(), permissionRequestCode)
+            activity.startActivityForResult(
+                projectionManager.createScreenCaptureIntent(),
+                permissionRequestCode
+            )
         } else {
             captureInBackground(projection, screenshotSpec)
         }
@@ -82,7 +83,11 @@ internal class MediaProjectionDelegateV21(
         }
     }
 
-    private fun captureInBackground(projection: MediaProjection, screenshotSpec: ScreenshotSpec, delayMs: Long = 0L) {
+    private fun captureInBackground(
+        projection: MediaProjection,
+        screenshotSpec: ScreenshotSpec,
+        delayMs: Long = 0L
+    ) {
         val captureThread = startCaptureThread()
         val captureThreadHandler = Handler(captureThread.looper)
         captureThreadHandler.postDelayed({
@@ -107,15 +112,30 @@ internal class MediaProjectionDelegateV21(
 
     }
 
-    private fun createImageReader(projection: MediaProjection, spec: ScreenshotSpec, callbackHandler: Handler): ImageReader {
+    private fun createImageReader(
+        projection: MediaProjection,
+        spec: ScreenshotSpec,
+        callbackHandler: Handler
+    ): ImageReader {
         //Lint forces to use ImageFormat (API 23+) instead of PixelFormat, even though ImageReader docs say that PixelFormat is supported
         //noinspection WrongConstant
-        val imageReader = ImageReader.newInstance(spec.width, spec.height, PixelFormat.RGBA_8888, 2)
-        imageReader.setOnImageAvailableListener(ImageAvailableListener(projection, spec.width, spec.height), callbackHandler)
+        val imageReader = ImageReader.newInstance(spec.width, spec.height, PixelFormat.RGBA_8888, 5)
+        imageReader.setOnImageAvailableListener(
+            ImageAvailableListener(
+                projection,
+                spec.width,
+                spec.height
+            ), callbackHandler
+        )
         return imageReader
     }
 
-    private fun createVirtualDisplay(projection: MediaProjection, surface: Surface, spec: ScreenshotSpec, callbackHandler: Handler): VirtualDisplay {
+    private fun createVirtualDisplay(
+        projection: MediaProjection,
+        surface: Surface,
+        spec: ScreenshotSpec,
+        callbackHandler: Handler
+    ): VirtualDisplay {
         return projection.createVirtualDisplay(
             CAPTURE_THREAD_NAME, spec.width, spec.height, spec.densityDpi,
             VIRTUAL_DISPLAY_FLAGS, surface, null,
@@ -159,48 +179,50 @@ internal class MediaProjectionDelegateV21(
     }
 
     private fun getMediaProjection(accessData: ProjectionAccessData): MediaProjection? {
-        return accessData.data?.let { data -> projectionManager.getMediaProjection(accessData.resultCode, data) }
+        return accessData.data?.let { data ->
+            projectionManager.getMediaProjection(
+                accessData.resultCode,
+                data
+            )
+        }
     }
 
     private fun Activity.getMediaProjectionManager(): MediaProjectionManager = requireNotNull(
         getSystemService(Context.MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
     )
 
-    private inner class ImageAvailableListener internal constructor(
+    private inner class ImageAvailableListener(
         private val projection: MediaProjection,
         private val width: Int,
         private val height: Int
     ) : ImageReader.OnImageAvailableListener {
-        private var processed = false
 
         override fun onImageAvailable(reader: ImageReader) {
-            if (processed) return
-            processed = true
             var image: Image? = null
-            var bitmap: Bitmap? = null
             try {
                 image = reader.acquireLatestImage()
-                if (image != null) {
-                    val planes = image.planes
-                    val buffer = planes[0].buffer
-                    val pixelStride = planes[0].pixelStride
-                    val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * width
-
-                    bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
-                    bitmap?.copyPixelsFromBuffer(buffer)
-                    onScreenshotCaptured(bitmap)
-                } else {
-                    val exception = MakeScreenshotFailedException.failedToAcquireImage()
-                    onScreenshotCaptureFailed(exception)
-                }
             } catch (e: Exception) {
-                onScreenshotCaptureFailed(MakeScreenshotFailedException(e))
-                bitmap?.recycle()
-            } finally {
-                closeSafely(image)
                 stopSafely(projection)
+                onScreenshotCaptureFailed(MakeScreenshotFailedException.failedToAcquireImage())
             }
+            if (image == null) return
+            val planes = image.planes
+            val buffer = planes[0].buffer
+            val pixelStride = planes[0].pixelStride
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * width
+            val bitmap = Bitmap.createBitmap(
+                width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888
+            )
+            bitmap.copyPixelsFromBuffer(buffer)
+            if (bitmap.isEmptyBitmap()) {
+                bitmap.recycle()
+                closeSafely(image)
+                return
+            }
+            onScreenshotCaptured(bitmap)
+            closeSafely(image)
+            stopSafely(projection)
         }
     }
 
@@ -223,7 +245,8 @@ internal class MediaProjectionDelegateV21(
     )
 
     companion object {
-        private const val VIRTUAL_DISPLAY_FLAGS = VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or VIRTUAL_DISPLAY_FLAG_PUBLIC
+        private const val VIRTUAL_DISPLAY_FLAGS =
+            VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or VIRTUAL_DISPLAY_FLAG_PUBLIC
         private const val DIALOG_CLOSED_DELAY_MS = 150L
 
         private const val CAPTURE_THREAD_NAME = "screenshotty"
